@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Smart E-Commerce Admin Analytics</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 30px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            color: #222;
+        }
+
+        .cards {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            width: 220px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            margin: 0 0 10px;
+            color: #555;
+        }
+
+        .card p {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0;
+            color: #222;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-container h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        canvas {
+            max-height: 400px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Smart E-Commerce Admin Analytics</h1>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Total Orders</h3>
+            <p>{{ total_orders }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Total Revenue</h3>
+            <p>₹{{ total_revenue }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Paid Revenue</h3>
+            <p>₹{{ paid_revenue }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Total Products</h3>
+            <p>{{ total_products }}</p>
+        </div>
+
+    </div>
+
+
+    <!-- Top Products -->
+
+    <div class="chart-container">
+
+        <h2>Top Products</h2>
+
+        <canvas id="topProductsChart"></canvas>
+
+    </div>
+
+
+    <!-- Low Stock Products -->
+
+    <div class="chart-container">
+
+        <h2>Low Stock Products</h2>
+
+        <canvas id="lowStockChart"></canvas>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // -----------------------------
+    // TOP PRODUCTS DATA
+    // -----------------------------
+
+    const topProductNames = [
+
+        {% for product in top_products %}
+
+            "{{ product.product__name|escapejs }}",
+
+        {% endfor %}
+
+    ];
+
+
+    const topProductSales = [
+
+        {% for product in top_products %}
+
+            {{ product.total_sold }},
+
+        {% endfor %}
+
+    ];
+
+
+    // -----------------------------
+    // TOP PRODUCTS CHART
+    // -----------------------------
+
+    new Chart(
+
+        document.getElementById("topProductsChart"),
+
+        {
+            type: "bar",
+
+            data: {
+
+                labels: topProductNames,
+
+                datasets: [
+
+                    {
+                        label: "Units Sold",
+
+                        data: topProductSales,
+
+                        borderWidth: 1
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
+
+    // -----------------------------
+    // LOW STOCK DATA
+    // -----------------------------
+
+    const lowStockNames = [
+
+        {% for product in low_stock_products %}
+
+            "{{ product.name|escapejs }}",
+
+        {% endfor %}
+
+    ];
+
+
+    const lowStockValues = [
+
+        {% for product in low_stock_products %}
+
+            {{ product.stock }},
+
+        {% endfor %}
+
+    ];
+
+
+    // -----------------------------
+    // LOW STOCK CHART
+    // -----------------------------
+
+    new Chart(
+
+        document.getElementById("lowStockChart"),
+
+        {
+            type: "bar",
+
+            data: {
+
+                labels: lowStockNames,
+
+                datasets: [
+
+                    {
+                        label: "Stock Remaining",
+
+                        data: lowStockValues,
+
+                        borderWidth: 1
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
+</script>
+
+</body>
+</html>
